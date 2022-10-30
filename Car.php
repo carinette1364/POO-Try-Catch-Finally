@@ -10,14 +10,26 @@ class Car
     private int $nbSeats;
     private string $energy;
     private int $energylevel;
+    private bool $hasParkBrake;
 
     /*Methodes*/
 
-    public function __construct(string $color, int $nbSeats,string $energy)
+    public function __construct(string $color, int $nbSeats, string $energy, bool $hasParkBrake)
     {
         $this->color = $color;
         $this->nbSeats = $nbSeats;
         $this->energy = $energy;
+        $this->hasParkBrake = $hasParkBrake;
+    }
+
+    public function getParkBrake(): bool
+    {
+        return $this->hasParkBrake;
+    }
+
+    public function setParkBrake($hasParkBrake): void
+    {
+        $this->hasParkBrake = $hasParkBrake;
     }
 
     public function getNbWheels(): int
@@ -37,7 +49,7 @@ class Car
 
     public function setCurrentSpeed($currentSpeed): void
     {
-        if($currentSpeed >= 0) {
+        if ($currentSpeed >= 0) {
             $this->currentSpeed = $currentSpeed;
         }
     }
@@ -84,38 +96,37 @@ class Car
 
     public function forward(): string
     {
-        if($this->currentSpeed > 60){
-            $this->energyLevel-=10;
+        if ($this->currentSpeed > 60) {
+            $this->energyLevel -= 10;
             return 'Ralentissez vous consommez trop ! Votre niveau est de : ' . $this->getEnergyLevel() .  '<br>';
         }
-      
-        // $this->currentSpeed = 30;
-        // return 'ça roule !<br>';
     }
 
     public function brake(): string
     {
         $sentence = "";
         while ($this->currentSpeed > 0) {
-            $this->currentSpeed-=10;
+            $this->currentSpeed -= 10;
             $sentence .= "ça freine !!!<br>";
         }
         $sentence .= "<br>Arrêt de votre véhicule !";
         return $sentence;
     }
 
-    public function start(): string
+    public function start(): void
     {
-        if($this->energyLevel == 0) {
-            return '<br>Vous ne pouvez pas démarrer ! vous êtes à sec, votre niveau est de : ' . $this->getEnergyLevel() . ' litres<br>';
+        try {
+            if ($this->hasParkBrake === false) {
+                echo 'OK pour démarrer, le frein à main est OFF <br>' . PHP_EOL;
+            } else {
+                throw new Exception('NOK pour démarrer, frein à main ON <br>');
+            }
+        } catch (Exception $e) {
+            echo 'Problème: ' . $e->getMessage() . PHP_EOL;
+            $this->setParkBrake(false);
+            echo 'Résolu: Frein à main est OFF maintenant <br>';
+        } finally {
+            echo 'Ma voiture roule comme un donut!<br>' . PHP_EOL;
         }
-        if($this->energyLevel <= 20) {
-            return '<br>Vous n\'irez pas loin, vous êtes presque à sec, votre niveau est de : ' . $this->getEnergyLevel() . ' litres<br>';
-        }
-        if($this->energyLevel > 20) { 
-            return '<br>Bonne route ! Votre niveau est de :  ' . $this->getEnergyLevel() . ' litres<br>';
-        }
-
     }
-
 }
